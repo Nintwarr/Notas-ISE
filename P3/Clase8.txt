@@ -1,0 +1,94 @@
+  --Probar Raid en Ubuntu con Zabbix:
+
+(Acordarse de instalar el grup en todos los discos del RAID manualmente)
+
+Para mirar dónde está instalado hacemos sudo apt install boot-info-script
+
+Ejecutamos "bootinfoscript" y se guardan los resultados en un fichero
+
+sudo grub-install /dev/(discos que faltan)
+
+Podemos comprobar que ha funcionado
+
+
+
+Sacamos el disco (p.e sdb) en caliente y reiniciamos.
+
+Se puede quedar en la consola de initramfs.
+
+Usamos dmesg
+
+Vemos que hay mensages sobre md y raid
+
+Podemos hacer cat /proc/mdstat
+
+hacer mdadm --run /dev/md0
+
+exit para salir de initramfs
+
+Ahora lsblk no muestra sdb con su md0
+
+
+Con mdadm -a /dev/md0 /dev/sdb activamos el segundo disco de nuestro raid de nuevo  PERO es importante haberle insertado de nuevo un disco
+
+watch -n 2 cat /proc/mdstat  es un monitor de copia del raid al nuevo disco
+
+mirar opciones detail examine y monitor de mdadm
+
+
+con mdadm --manage --set-faulty /dev/md0 /dev/sdb
+
+madadm --remove /dev/md0 /dev/sdb
+
+y vovlemos a hacer mdadm --add /dev/md0 /dev/sdb
+
+
+
+
+  --Ahora vamos a crear nuestros propios servicios
+
+Vamos a ver systemd. Es un scheduler de procesos.
+
+Vamos a hacer un programilla en python (que viene en el guión)
+
+El archivo se va a llamar mon-raid-py
+
+podemos comprobar /etc/systemd/system
+
+ahí crearemos nuestro servicio mon-raid y programaremos el scheduler
+
+touch mon-raid.service
+touch mon-raid.timer
+
+Lo modificamos con el código del guión
+
+Lanzamos nuestro servicio con systemctl
+
+journalctl -u mon-raid.service --since="yesterday"
+
+systemctl enable mon-raid.timer
+
+systemctl start mon-raid.timer
+
+
+
+
+Terminator es una herramienta que permite abrir muchos terminales y lo que se escribe en uno, se replica en los demás
+
+Mirar Ansible --> Envía por ssh las órdenes que le digamos a las demás máquinas. Es agentless, no hace falta instalar nada.
+
+
+Mirar /etc/ansible. Ahí hay un fichero host. Ahí están las ip's de las máquinas a las que envía las órdenes
+
+Probar esto con las máquinas de Ubuntu y CentOS.
+
+
+
+
+  --Zabbix:
+
+Usar versión 3.4
+
+Lo que hay que hacer:
+
+En ubuntu -- Tener servidor de Zabbiz y agente de Zabbiz y un agente en centOS para que le devuelva los datos de monitorización

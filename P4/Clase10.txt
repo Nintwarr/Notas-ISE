@@ -1,0 +1,46 @@
+Benchmarking
+
+Usar Phoronix mirando su configuración. Lo mínimo que tenemos que hacer es
+poder lanzar un benchmark que hemos descargado de su repositorio.
+
+
+
+apache utils.
+
+El benchmark de apache es 'ab -m -c <ip> ¿/?
+
+Tenemos que instalar apache benchmark y hacer alguna prueba.
+
+
+
+Vamos a testear un servidor. Vamos a probar el paralelismo de SWAD.
+
+El escenario es: Haremos un post --> al servidor --> devuelve un token (Json Web Token) que sirve para autenticarnos después. Con ese token podremos hacer operaciones get que nos devuelven otros datos en formatos Json.
+
+El servidor no es monolítico, digamos que tiene para él contenedores con nodeJS y con mongoDB.
+
+
+Utilizar Jmeter para automatizar el proceso anterior.
+
+
+Docker es una herramienta para crear microservicios.
+Mirar documentación. Tutorial de digital ocean.
+
+Contenedor:proceso en ejecución
+Imagen:El archivod
+
+Para lanzar imágenes podemos hacer docker run -it <imagen>
+docker pull ubuntu
+docker run ubuntu
+docker attach <id>  --> docker ps  o  docker container ls -all
+docker images
+
+
+
+Herramienta docker compose - Es el equivalente a Ansible para contenedores.
+
+Orquesta muchas imágenes para que se vinculen entre sí y al final parece una aplicación más grande
+
+Ficheros importantes: dockerfile y dockercompose
+
+"Postman"

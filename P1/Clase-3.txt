@@ -1,0 +1,112 @@
+Empezamos de cero y le añadimos dos discos de unos dos gigas.
+
+Miramos nuestra configuración con lsblk.
+
+Creamos un RAID por software con mdadm. Lo tendremos que instalar (iniciamos como root).
+
+
+Como tendremos que entrar en red, vamos a manejar la tarjeta de red con "ip addr"
+
+Levantamos la tarjeta de red con "ifup"
+
+Instalamos con yum install -y "nombre" (que va a ser mdadm)
+
+
+Procedemos a hacer el RAID por software
+
+mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdb /dev/sdc
+
+Ya tenemos el RAID, pero aún no tenemos creado un volumen físico, procedemos:
+
+pvcreate /dev/md0 
+
+Ahora crearemos el grupo de volúmenes:
+
+vgcreate pmraid1 (más argumentos)
+
+Crear volúmenes lógico dentro de grupo pmraid1
+
+lvcreate -L 1G -n newvar pmraid1
+
+mkfs -t ext4 /dev/mapper/pmraid1-newvar
+
+systemctl isolate runlevel1.target
+
+mkdir /mnt/newvar
+
+mount /dev/mapper/pmradi1-newvar /mnt/newvar
+
+cp -r --preserve=all /var/. /mnt/newvar
+
+Hacer copia de seguridad de fstab y luego modificarlo así:
+
+echo '/dev/mapper/pmraid1-newvar /var ext4 defaults 0 0' >> /etc/fstab
+
+umount /mnt/newvar   y seguir todos los pasos anteriores de copia con contexto
+
+
+mount -a
+
+Apagamos, creando snapshot y probamos a "pegarle un tirón al disco duro"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ahora vamos a encriptar los volúmenes lógicos con LUKS (Linux Unified Key Setup).
+
+POdemos hacer LUKS sobre LVM o LVM sobre LUKS
+
+Procedemos:
+
+ - Levantamos interfaz de red con ifup enp0s3
+
+ - yum install cryptsetup
+
+ - Entramos en modo mantenimiento
+
+ - mkdir /varRAID
+   cp -r --preserve=all /var/. /varRAID
+   umount /var
+   mount | grep var
+   cryptsetup luksFormat /dev/mapper/pmraid1-newvar
+   cryptosetup luksOpen /dev/mapper/pmraid1-newvar pmraid1-newvar_crypt
+   mkfs -t ext4 /dev/mapper/pmraid1-newvar_crypt
+
+ - Hacemos una copia de seguridad:
+   
+   mkdir /mnt/varCifr
+   mount /dev/mapper/pmraid1-newvar_crypt /mnt/varCifr/
+   cp -r --preserve=all /varRAID/. /mnt/varCifr/
+   
+ - blkid | grep var        para obtener el UUID del volumen lógico al que voy a enlazar el volumen
+                           encriptado
+
+ - Dentro de /etc/crypttab poner:
+   
+   pmraid1-newvar_crypt UUID=(ID del volumen lógico sin comillas) none
+
+ - cp /etc/fstab /etc/fstab.backup
+   echo '/dev/mapper/pmraid1-newvar_crypt /var ext4 defaults 0 0' >> /etc/fstab
+
+   comprobar el fstab y quitar penúltima línea, la del volumen lógico sin encriptar
+
+   umount /mnt/varCifr
+   mount -a  
+
+
+
+
+
+
+ 

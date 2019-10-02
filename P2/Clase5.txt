@@ -1,0 +1,83 @@
+Instalación y configuración de SSH (CentOS) + ...
+
+
+
+|----------------------------------------------------------------------|
+|   Instalado por  | Nomenclatura   | Acceso root   | Firewall         |
+|   defecto        |                | habilitado    |                  |
+|                  |                | (por defecto) |                  |
+|                  |                |               |                  |
+|----------------------------------------------------------------------|
+|Ubuntu            |                |               |                  |
+|----------------------------------------------------------------------|
+|        NO        |    ssh o sshd  |   prohibit    |        NO        |
+|                  |                |   password    |                  |
+|----------------------------------------------------------------------|
+|CentOS            |                |               |                  |
+|----------------------------------------------------------------------|
+|       Sí         |      sshd      |     YES       |        YES       |
+|                  |                |               |                  |
+|----------------------------------------------------------------------|
+
+  En CentOS hay que descomentar las líneas del archivo de configuración para que luego tengan efecto, sino, se utiliza la configuración por defecto. (Acordarse de reiniciar el servicio). Para Ubuntu viene sin comentar
+
+Deshabilitamos la posibilidad de iniciar sesión con root
+
+Cambiamos el puerto en el archivo de configuración de CentOS del 22 al 22022
+
+Para que senga efecto necesitamos el software 'semanage'
+
+yum search semanage  para buscar un binario.
+
+Para ello usamos yum provides (¿semanage?)
+
+yum install policy.......
+
+semanage port -l    para una lista de puertos y los servicios que se están ejecutando
+
+semanage port -l | grep ssh     vemos que sólo está habilitado el puerto 22
+
+semanage port -a -t ssh_port_t -p tcp 22022     (mirar man semanage)
+
+Reiniciamos el servicio systemctl restart sshd
+
+Miramos el estado para comprobar que está abierto
+
+No nos dejará hacer conexión por el firewall
+
+accedemos como 'firewall-cmd' y miramos el estado con 'firewall-cmd' status
+
+Habilitamos el puerto que queremos en el firewall con el comando:
+firewall-cmd --add-port=22022/tcp  (protocolo usado)  //Pero esto es temporal
+
+Simplemente, para que el cambio sea permanente, añadimos la línea la opción --permanent
+
+Para que tenga efecto hace falta reiniciar porque se modifican ficheros de configuración y hay que reiniciar o mandar el comando 'firewall-cmd --reload'
+
+
+
+
+
+
+Copias de Seguridad / Control de Cambios
+
+Mirar backupcentral
+
+
+GIT
+
+ WD  -->  Stage  --> Local Repository --> Remote Repository
+
+Para añadir al stage 'gir add'
+
+Para añadir al local repository 'git commit'
+
+Para recuperar del local repository 'git checkout'
+
+Para meter en el repositorio remoto 'pit push'
+
+Para recuperar del repositorio remoto 'git pull'
+
+Para "copiar" del repositorio remoto 'git clone'
+
+Para unir todo 'git merge'

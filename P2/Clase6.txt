@@ -1,0 +1,111 @@
+Instalación Servidor Web Básico
+
+Un servidor web es aquel que recibe respuestas de páginas web y da como respuesta documentos HTML (Hypertext Markup Language) con la página web requerida
+
+Estas peticiones y respuestas se realizan a través de internet mediant el protocolo HTTP (Puerto 80) o HTTPS (Puerto 443) (Hypertext Transfer Protocol)
+
+URL --> Uniform Resource Locator
+URI -->                  Identifier
+
+
+
+
+Necesario para tener un servidor, aparte de una máquina:
+
+ S.O           --> Linux
+ Servidor HTML --> Apache
+ BBDD          --> MySQL --> MariaDB
+ Intérprete    --> PHP, Python
+
+
+
+Instalación de LAMP:
+
+ -Ubuntu
+tasksel  --> Lampserver  (Si falla, probar un apt update)
+Ver lo que está activo y sino, activarlo
+systemctl status apache2
+systemctl status mysql (mirar man de mysql)
+php
+echo("Hola mundo");
+Comprobar la página web por defecto poniendo la ip de la máquina en el navegador
+
+ -CentOS
+su
+ifup enp0s3
+yum search apache | grep server; yum install httpd
+Comprobar que está funcionando
+Vemos que hay que habilitarlo con systemctl enable httpd
+systemctl start httpd
+
+yum install php
+php -a
+echo("Funciona!\n");
+
+yum install mariadb -y
+mysql -u root -p   (da error porque henos instalado el cliente)
+yum install mariadb-server
+systemctl enable mariadb
+systemctl start mariadb
+mysql_secure_instslation 
+mysql -u root -p
+showd databases
+create database my_db
+
+Comprobar funcionamiento
+cd /var/www/html
+ls
+En la documentación de php (mysqli_connect) hay una página de ejemplo
+Con terminal externa nos conectamos a ssh obl@IPCENTOS -p 22022
+su
+cd /var/www/html
+cat > miscript.php
+
+Volvemos a terminal de centOS (o no)
+cd /etc/httpd
+cd conf
+vi httpd.conf
+mirar DirectoryIndex y cambiar por index.html *.php
+reiniciamos el servicio y no funciona
+Es problema de firewall
+firewall-cmd --add-port=80/tcp --permanent
+firewall-cmd --reload
+Falla
+seguimos haciendo pruebas
+curl localhost/miscript.php  no hace nada
+Es necesario instalar un adaptador de mariadb a php
+yum install php-mysql
+(si no funciona como debe, es probable que se necesite reiniciar el servicio httpd)
+
+Lo último que queda cuando nada funciona, es probable que sea culpa del polichía SELinux
+
+getseBool -a | grep http | less
+setsebool -p httpd_can_network_connect_db on
+systemctl restart httpd
+
+
+
+Herramientas que no veremos rkhunter
+
+Herramientas que sí vamos a ver fail2ban, tmux, screen
+
+ - Fail2ban:
+yum install epel-release  (instala la entrepise Linux)
+yum install fail2ban   (permite crear cárceles para servicios, originalmente pensado para ssh)
+systemctl enable fail2ban
+systemctl start fail2ban
+fail2ban-client status
+En cd /etc/fail2banjail.conf  hay un archivo que te aconseja de cómo hacer cárceles
+cp -a jail.conf jail.local
+vi jail.local y cambiamos la carcel ssh a true
+systemctl restart fail2ban
+fail2ban-client status
+En el jail.local hay más opciones nos vamos a [sshd] y cambiamos el puerto.
+Reiniciamos
+Ya no nos debería dejar
+
+Para desbanear utilizamos fail2ban-client set sshd unbanip 192.168.1.1?
+
+yum install screen
+Sirve para recuperar procesos perdidos en escritorios remotos.
+Es una especie de gestor de ventanas en terminal remota.

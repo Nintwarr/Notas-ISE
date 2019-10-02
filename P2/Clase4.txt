@@ -1,0 +1,57 @@
+Hacer instalación de Ubuntu y configuración de red
+
+ Loguearse en sudo su
+
+   Instalar (openssh) SSHD
+
+opcion 1: tasksel y bajar
+
+opcion 2: apt install openssh-server
+
+   Ver si está activo
+
+ps -nf | grep ssh
+
+systemctl status sshd.service
+
+ssh localhost  --> no deja porque es root@localhost
+
+ssh dmg@localhost
+
+mirar el archivo known hosts por si tenemos un fingerprint que nos impide hacer conexión
+
+IP's --> Host:192.168.56.1   CentOS:192.168.56.110   Ubuntu(S):192.168.56.105
+
+  Mirar configuración 
+
+está en   /etc/ssh/sshd_config
+
+ buscar permitRootLogin  (y poner no)
+
+ cambiar puerto de escucha a 22022, por ejemplo
+
+ reiniciar el servicio con  systemctl restart sshd.service?
+
+
+  Cexión sin contraseña mediante claves público-privadas
+
+ ssh-keygen       crea un par de archivos:  id_rsa  id_rsa.pub
+
+ahora enviamos nuestra clave pública al servidor
+
+ ssh-copy-id 192.168.56.105 -p 22022  porque lo hacemos desde el cliente
+
+ comprobamos lo hecho haciendo una conexión ssh
+
+   Ahora miramos el firewall
+
+ufw status
+
+ufw enable
+
+
+
+
+
+
+ 
