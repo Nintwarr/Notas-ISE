@@ -7,7 +7,7 @@ The notes will be parsed into markdown as I have time to.
 
 ## Directory structure
 - The main folders refer to the *Practice Number*.
-- Inside those folders you'll find *.txt* or *.md* files including notes from endividual classes each.
+- Inside those folders you'll find *.txt* or *.md* files including notes from individual classes each.
 
 ### Notice
 All files are in Spanish.
