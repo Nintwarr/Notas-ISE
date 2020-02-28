@@ -2,7 +2,7 @@
 
 - **brm:** Sectores de tratamiento de discos
 
-### Comandos CwentOS7
+### Comandos CentOS7
 
 **Casi todos sirven para Ubuntu-Server**
 
